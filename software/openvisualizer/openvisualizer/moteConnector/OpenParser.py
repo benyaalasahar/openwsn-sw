@@ -14,6 +14,8 @@ import ParserStatus
 import ParserInfoErrorCritical as ParserIEC
 import ParserData
 import ParserPacket
+import ParserStat
+import ParserPrintf
 
 class OpenParser(Parser.Parser):
     
@@ -98,5 +100,4 @@ class OpenParser(Parser.Parser):
             parser = self.parserStat.parseInput,
         )
     #======================== public ==========================================
-    
-    #======================== private =========================================
+  
