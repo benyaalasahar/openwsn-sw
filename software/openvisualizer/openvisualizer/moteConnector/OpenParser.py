@@ -81,6 +81,16 @@ class OpenParser(Parser.Parser):
         )
         self._addSubParser(
             index  = 0,
+            val    = self.SERFRAME_MOTE2PC_STAT,
+            parser = self.parserStat.parseInput,
+        )
+        self._addSubParser(
+            index  = 0,
+            val    = self.SERFRAME_MOTE2PC_PRINTF,
+            parser = self.parserPrintf.parseInput,
+        )
+        self._addSubParser(
+            index  = 0,
             val    = self.SERFRAME_MOTE2PC_CRITICAL,
             parser = self.parserCritical.parseInput,
         )
@@ -89,15 +99,7 @@ class OpenParser(Parser.Parser):
             val    = self.SERFRAME_MOTE2PC_SNIFFED_PACKET,
             parser = self.parserPacket.parseInput,
         )
-        self._addSubParser(
-            index  = 0,
-            val    = self.SERFRAME_MOTE2PC_PRINTF,
-            parser = self.parserPrintf.parseInput,
-        )
-       self._addSubParser(
-            index  = 0,
-            val    = self.SERFRAME_MOTE2PC_STAT,
-            parser = self.parserStat.parseInput,
-        )
+        
+   
     #======================== public ==========================================
   

@@ -1,24 +1,24 @@
 
- # Copyright (c) 2017, CNRS. 
- # All rights reserved. 
- #  
- # Released under the BSD 3-Clause license as published at the link below.
- # https://openwsn.atlassian.net/wiki/display/OW/License
+# Copyright (c) 2017, CNRS. 
+# All rights reserved. 
+#  
+# Released under the BSD 3-Clause license as published at the link below.
+# https://openwsn.atlassian.net/wiki/display/OW/License
  
- import logging
- log = logging.getLogger('ParserPrintf')
- log.setLevel(logging.INFO)
- log.addHandler(logging.NullHandler())
- 
- import struct
- 
- from pydispatch import dispatcher
- import StackDefines
+import logging
+log = logging.getLogger('ParserPrintf')
+log.setLevel(logging.INFO)
+log.addHandler(logging.NullHandler())
 
- from ParserException import ParserException
- import Parser
+import struct
  
- class ParserPrintf(Parser.Parser):
+from pydispatch import dispatcher
+import StackDefines
+
+from ParserException import ParserException
+import Parser
+ 
+class ParserPrintf(Parser.Parser):
      
      HEADER_LENGTH  = 2
      MSPERSLOT      = 15 #ms per slot.
@@ -44,20 +44,20 @@
          self.buf_txt  = ""    #buffer for the messages (to flush when I receive a '\n')
          self.buf_asn = ""
      
-     #returns a string with the decimal value of a uint16_t
+    #returns a string with the decimal value of a uint16_t
      def BytesToString(self, bytes):
          str = ''
          i = 0
- 
-       #print bytes
- 
+
+         #print bytes
+
          for byte in bytes:
              str = format(eval('{0} + {1} * 256 ** {2}'.format(str, byte, i)))
-            #print ('{0}:{1}'.format(i, str)) 
+             #print ('{0}:{1}'.format(i, str)) 
              i = i + 1      
- 
+
          return(str)
- 
+
      def BytesToStr(self, bytes):
          str = ''
          i = 0
@@ -72,8 +72,8 @@
          str = ''
          i = 0
  
-        for byte in bytes:
-            str = str + '{:02x}'.format(byte) 
+         for byte in bytes:
+             str = str + '{:02x}'.format(byte) 
              #if (i < len(bytes)-1):
              #    str = str + '-'
              i += 1
@@ -92,7 +92,7 @@
           
           log.info("(asn={0}) from {1}: {2}\n".format(
                  self.buf_asn,
-                self.buf_addr,
+                 self.buf_addr,
                  self.buf_txt
                  )
              )
@@ -108,18 +108,18 @@
              log.debug('received printf {0}'.format(input))
          
         #subtype: string
-         if (input[0] == self.STRING) :
+        if (input[0] == self.STRING) :
              self.buf_addr = self.BytesToAddr(input[1:3])
              self.buf_asn  = self.BytesToString(input[3:8])
              for c in input[8:] :
                 if (c == 10):   #EOL
                      self.flush()
-                 self.buf_txt = self.buf_txt + unichr(c)
+                     self.buf_txt = self.buf_txt + unichr(c)
         
              #subtype integer
         elif(input[0] == self.INT32):
-            self.buf_txt = self.buf_txt + self.BytesToString(input[1:5])
-         else:
+             self.buf_txt = self.buf_txt + self.BytesToString(input[1:5])
+        else:
              print("Unkwnon printf subtype\n")
         
         #everything was fine  
