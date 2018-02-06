@@ -123,7 +123,19 @@ class ParserStat(Parser.Parser):
             if value == byte:
                 return(key)
         return("FTYPE_UNKNOWN")
-
+    def BytesToCells(self, bytes):
+        result = ''
+        num = 0
+         
+        for i in range(0, len(bytes) / 5) :
+            if (bytes[5*i] == 1):                
+                 result = result + format('choffset[{0}]={1}|slotoffset[{0}]={2}|'.format(
+                     num,
+                     bytes[5*i+1],
+                     bytes[5*i+3]
+                     ))
+                 num = num + 1
+        return(result)
 
     def ByteToUDPPort(self, bytes):
         
@@ -141,8 +153,31 @@ class ParserStat(Parser.Parser):
             if value == result:
                 return(key)
         return("WKP_UNKNOWN")
-
-
+    def ByteToStatus(self, byte):
+      CODE = {
+      'ENQUEUED'  : 1,
+      'TXED'      : 2,
+      'RCVD'      : 3,
+      'FAILED'    : 4
+      } 
+ 
+      for key, value in CODE.iteritems():
+          if value == byte:
+              return(key)
+      return("UNKNOWN")
+    def ByteToCellType(self, byte):
+      CELLTYPE = {
+      'OFF'              : 0,
+      'TX'               : 1,
+      'RX'               : 2,
+      'TXRX'             : 3,
+      'SERIALRX'         : 4,
+      'MORESERIALRX'     : 5
+      }
+      for key, value in CELLTYPE.iteritems():
+          if value == byte:
+              return(key)
+      return("UNKNOWN")
      #======================== write logs (factroized) ==========================================
   
      #info to write when a packet is dropped
@@ -208,16 +243,18 @@ class ParserStat(Parser.Parser):
                  self.BytesToAddr(addr),
                  self.BytesToString(asnbytes),
                  self.ByteToCellType(input[8]),
-                 input[9],
+                 self.ByteToCellType(input[9]),
                  input[10],
-                 input[1],
-                 self.BytesToAddr(input[12:20])
+                 input[11],
+                 input[12],
+                 self.BytesToAddr(input[13:21])
                  ));       
          elif (statType == self.SERTYPE_ACK):
-             log.info('STAT_ACK|addr={0}|asn={1}|l2addr={3}'.format(
+             log.info('STAT_ACK|addr={0}|asn={1}|status={2}|l2addr={3}'.format(
                  self.BytesToAddr(addr),
                  self.BytesToString(asnbytes),
-                 self.BytesToAddr(input[8:16])
+                 self.ByteToStatus(input[8]),
+                 self.BytesToAddr(input[9:17])
                  ));
          elif (statType == self.SERTYPE_PKT_DROPPED):
             log.info('STAT_drop|addr={0}|asn={1}|length={2}|frameType={3}|l2Src={4}|L3Src={11}|L3Dest={12}|L4Proto={13}|L4SrcPort={14}|L4DestPort={15}'.format(
@@ -239,20 +276,22 @@ class ParserStat(Parser.Parser):
  
  
          elif (statType == self.SERTYPE_DIO):
-             log.info('STAT_DIO|addr={0}|asn={1}|rplinstanceId={3}|rank={4}|DODAGID={5}'.format(
+             log.info('STAT_DIO|addr={0}|asn={1}|status={2}|rplinstanceId={3}|rank={4}|DODAGID={5}'.format(
                  self.BytesToAddr(addr),
                  self.BytesToString(asnbytes),
-                 input[8],
-                 self.BytesToString(input[9:11]),
-                 self.BytesToAddr(input[11:27])               
+                 self.ByteToStatus(input[8]),
+                 input[9],
+                 self.BytesToString(input[10:12]),
+                 self.BytesToAddr(input[12:28])               
                  ));
  
          elif (statType == self.SERTYPE_DAO):
-             log.info('STAT_DAO|addr={0}|asn={1}|parent={3}|DODAGID={4}'.format(
+             log.info('STAT_DAO|addr={0}|asn={1}|status={2}|parent={3}|DODAGID={4}'.format(
                  self.BytesToAddr(addr),
                  self.BytesToString(asnbytes),
-                 self.BytesToAddr(input[8:16]),
-                 self.BytesToAddr(input[16:32])               
+                 self.ByteToStatus(input[8]),
+                 self.BytesToAddr(input[9:17]),
+                 self.BytesToAddr(input[17:33])               
                  ));
                  
          elif (statType == self.SERTYPE_NODESTATE):
@@ -272,11 +311,13 @@ class ParserStat(Parser.Parser):
                  ));
  
          elif (statType == self.SERTYPE_6PCMD):
-             log.info('STAT_6PCMD|addr={0}|asn={1}|command={2}|status={3}|neigh={4}'.format(
+             log.info('STAT_6PCMD|addr={0}|asn={1}|command={2}|status={3}|neigh={4}|cells={5}'.format(
                  self.BytesToAddr(addr),
                  self.BytesToString(asnbytes),
                  self.ByteToSixtopCode(input[8]),
-                 self.BytesToAddr(input[9:17])
+                 self.ByteToStatus(input[9]),
+                 self.BytesToAddr(input[10:18]),
+                 self.BytesToCells(input[18:]) 
                  ));
          
  
