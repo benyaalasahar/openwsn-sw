@@ -641,11 +641,17 @@ if __name__=="__main__":
     
     #===== add a cli (minimal) interface
 
-    banner  = []
-    banner += ['OpenVisualizer']
-    banner += ['web interface started at {0}:{1}'.format(argspace.host,argspace.port)]
-    banner += ['enter \'q\' to exit']
-    banner  = '\n'.join(banner)
-    print banner
-
-    webapp.cmdloop()
+      banner  = []
+      banner += ['OpenVisualizer']
+      banner += ['web interface started at {0}:{1}'.format(argspace.host,argspace.port)]
+      banner += ['enter \'q\' to exit']
+      banner  = '\n'.join(banner)
+      print banner
+    
+      while True:
+         input = raw_input('> ')
+         if input=='q':
+              print 'bye bye.'
+              app.close()
+              os.kill(os.getpid(), signal.SIGTERM)
+ 

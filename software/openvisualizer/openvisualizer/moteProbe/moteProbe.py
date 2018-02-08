@@ -68,7 +68,7 @@ def findSerialPorts():
         if platform.system() == 'Darwin':
             portMask = ['/dev/tty.usbserial-*']
         else:
-            portMask = ['/dev/ttyUSB*']
+            portMask = ['/dev/ttyUSB*', '/dev/ttyAMA*', '/dev/ttyA8_M3']
         for mask in portMask :
             serialports += [(s,BAUDRATE_GINA) for s in glob.glob(mask)]
 
@@ -188,7 +188,7 @@ class moteProbe(threading.Thread):
                 log.info("open port {0}".format(self.portname))
                 
                 if   self.mode==self.MODE_SERIAL:
-                    self.serial = serial.Serial(self.serialport,self.baudrate,timeout=1,rtscts=False,dsrdtr=False)
+                    self.serial = serial.Serial(self.serialport,self.baudrate,timeout=1,rtscts=True,dsrdtr=True)
                 elif self.mode==self.MODE_EMULATED:
                     self.serial = self.emulatedMote.bspUart
                 elif self.mode==self.MODE_IOTLAB:
